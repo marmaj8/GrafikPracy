@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="2b7720cc4f8545a5989a430f1783ca3c" Name="Diagram1" >
+        <EntityTypeShape EntityType="DataBaseModel.Czas" Width="1.5" PointX="14.125" PointY="3.125" />
+        <EntityTypeShape EntityType="DataBaseModel.Dzien" Width="1.5" PointX="0.5" PointY="0.5" />
+        <EntityTypeShape EntityType="DataBaseModel.DzienRoboczyPracownika" Width="1.5" PointX="3.375" PointY="3.125" />
+        <EntityTypeShape EntityType="DataBaseModel.DzienTygodnia" Width="1.5" PointX="0.5" PointY="4.875" />
+        <EntityTypeShape EntityType="DataBaseModel.DzienUrlopu" Width="1.5" PointX="3.375" PointY="0.5" />
+        <EntityTypeShape EntityType="DataBaseModel.Godzina" Width="1.5" PointX="3.375" PointY="6.125" />
+        <EntityTypeShape EntityType="DataBaseModel.Grafik" Width="1.5" PointX="14.125" PointY="6.625" />
+        <EntityTypeShape EntityType="DataBaseModel.Pracownik" Width="1.5" PointX="6.125" PointY="3.25" />
+        <EntityTypeShape EntityType="DataBaseModel.PracownikNaStanowisku" Width="1.5" PointX="11.5" PointY="3.125" />
+        <EntityTypeShape EntityType="DataBaseModel.Stanowisko" Width="1.5" PointX="8.875" PointY="7.25" />
+        <EntityTypeShape EntityType="DataBaseModel.StanowiskoMiejsca" Width="1.5" PointX="6.125" PointY="6.875" />
+        <EntityTypeShape EntityType="DataBaseModel.StanowiskoPracownika" Width="1.5" PointX="8.875" PointY="4.375" />
+        <EntityTypeShape EntityType="DataBaseModel.Urlop" Width="1.5" PointX="6.125" PointY="0.5" />
+        <AssociationConnector Association="DataBaseModel.FK_CzasPracownikNaStanowisku" />
+        <AssociationConnector Association="DataBaseModel.FK_GrafikCzas" />
+        <AssociationConnector Association="DataBaseModel.FK_DzienDzienUrlopu" />
+        <AssociationConnector Association="DataBaseModel.FK_DzienTygodniaDzienRoboczyPracownika" />
+        <AssociationConnector Association="DataBaseModel.FK_PracownikDzienRoboczyPracownika" />
+        <AssociationConnector Association="DataBaseModel.FK_DzienTygodniaGodzina" />
+        <AssociationConnector Association="DataBaseModel.FK_UrlopDzienUrlopu" />
+        <AssociationConnector Association="DataBaseModel.FK_GodzinaStanowiskoMiejsca" />
+        <AssociationConnector Association="DataBaseModel.FK_PracownikPracownikNaStanowisku" />
+        <AssociationConnector Association="DataBaseModel.FK_PracownikStanowiskoPracownika" />
+        <AssociationConnector Association="DataBaseModel.FK_PracownikUrlop" />
+        <AssociationConnector Association="DataBaseModel.FK_StanowiskoPracownikNaStanowisku" />
+        <AssociationConnector Association="DataBaseModel.FK_StanowiskoStanowiskoMiejsca" />
+        <AssociationConnector Association="DataBaseModel.FK_StanowiskoStanowiskoPracownika" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
