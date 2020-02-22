@@ -13,6 +13,7 @@ namespace GrafikPracy.Models
         public int dni;
         public Boolean zatwierdzony;
         public String powod;
+        public int id;
 
         public UrlopToSend()
         {
@@ -21,6 +22,7 @@ namespace GrafikPracy.Models
 
         public UrlopToSend(Urlop urlop)
         {
+            id = urlop.Id;
             pracownik = urlop.Pracownik.Id;
             zatwierdzony = urlop.Zatwierdzony;
             powod = urlop.Powod;

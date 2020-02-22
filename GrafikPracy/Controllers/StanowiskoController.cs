@@ -195,6 +195,8 @@ namespace GrafikPracy.Controllers
 
                 st.Nazwa = stanowisko.Nazwa;
 
+                db.StanowiskoMiejsca.RemoveRange(st.StanowiskoMiejsca);
+
                 st.StanowiskoMiejsca.Clear();
 
                 foreach(Models.StanowiskoMiejscaToSend smts in stanowisko.Miejsca)

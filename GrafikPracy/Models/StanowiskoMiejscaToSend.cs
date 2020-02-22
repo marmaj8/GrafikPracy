@@ -15,6 +15,11 @@ namespace GrafikPracy.Models
         public DateTime Koniec { get; set; }
         public int Dzien { get; set; }
 
+        public StanowiskoMiejscaToSend()
+        {
+
+        }
+
         public StanowiskoMiejscaToSend(StanowiskoMiejsca stanowiskoMiejsca)
         {
             Stanowisko = stanowiskoMiejsca.Stanowisko.Id;

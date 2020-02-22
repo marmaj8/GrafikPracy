@@ -15,10 +15,10 @@ namespace GrafikPracy.Models
     {
         [StringLength(1000, ErrorMessage = "Powód urlopu jest zbyt długi!")]
         public string Powod { get; set; }
-
+        /*
         [Required]
         [MinLength(1, ErrorMessage = "Urlup musi zawierać conajmniej 1 dzień!")]
-        public List<Models.DzienUrlopu> DzienUrlopu;
+        public List<Models.DzienUrlopu> DzienUrlopu;*/
 
         [Required (ErrorMessage ="Urlop musi byc przypisany do pracownika!")]
         public Models.Pracownik Pracownik;

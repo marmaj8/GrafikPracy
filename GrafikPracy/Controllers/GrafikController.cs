@@ -19,6 +19,8 @@ namespace GrafikPracy.Controllers
     [Authorize]
     public class GrafikController : ApiController
     {
+        private static Boolean TRWA_GENEROWANIE = false;
+
         [HttpGet]
         public IHttpActionResult List(Boolean czyWszystkie)
         {
@@ -86,7 +88,7 @@ namespace GrafikPracy.Controllers
             }
             catch (InvalidOperationException ex)
             {
-                return Content(HttpStatusCode.NotFound, "Nie znaleziono grafiku o id " + id);
+                return Content(HttpStatusCode.NotFound, "Nie znaleziono zatwierdzonego grafiku na dzień " + dzien.ToString("dd'-'MM'-'yyyy"));
             }
             catch (Exception ex)
             {
@@ -111,9 +113,10 @@ namespace GrafikPracy.Controllers
 
             Models.DataBaseEntities db = new Models.DataBaseEntities();
 
+            Models.Grafik gr = null;
             try
             {
-                Models.Grafik gr = db.Grafik.First(g => g.Id == id);
+                gr = db.Grafik.First(g => g.Id == id);
 
                 if (zatwierdzone)
                 {
@@ -134,7 +137,7 @@ namespace GrafikPracy.Controllers
                 return Content(HttpStatusCode.InternalServerError, "Błąd serwera");
             }
 
-            return Ok();
+            return Ok(gr.Zatwierdzony);
         }
 
         [HttpPost]
@@ -154,6 +157,12 @@ namespace GrafikPracy.Controllers
 
             try
             {
+                if (TRWA_GENEROWANIE)
+                {
+                    return Content(HttpStatusCode.Conflict, "Trwa Generowanie");
+                }
+                TRWA_GENEROWANIE = true;
+
                 Models.DataBaseEntities db = new Models.DataBaseEntities();
 
                 List<Models.Pracownik> pracownicy = db.Pracownik.Where(p => p.GodzinWUmowie > 0 && p.StanowiskoPracownika.Count() > 0).ToList();
@@ -251,10 +260,26 @@ namespace GrafikPracy.Controllers
             {
                 return Content(HttpStatusCode.InternalServerError, ex.ToString());
             }
+            TRWA_GENEROWANIE = false;
 
             return Ok(grafik.Id);
         }
 
+        [HttpGet]
+        public IHttpActionResult CzyGeneruje()
+        {
+            User = System.Web.HttpContext.Current.User;
+            int user;
+            int.TryParse(((ClaimsIdentity)User.Identity).Claims.First(c => c.Type == "Id").Value, out user);
+
+            ((ClaimsIdentity)User.Identity).Claims.First(c => c.Type == "Admin");
+            if (((ClaimsIdentity)User.Identity).Claims.First(c => c.Type == "Admin").Value == "false")
+            {
+                return Content(HttpStatusCode.Forbidden, "Brak uprawnień do wykonania żądania!");
+            }
+
+            return Ok(TRWA_GENEROWANIE);
+        }
         [HttpDelete]
         public IHttpActionResult SkasujPozycje(int id)
         {

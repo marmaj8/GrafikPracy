@@ -11,6 +11,11 @@ namespace GrafikPracy.Models
         public string Nazwa { get; set; }
         public List<StanowiskoMiejscaToSend> Miejsca { get; set; }
         
+        public StanowiskoToSend()
+        {
+
+        }
+
         public StanowiskoToSend(Stanowisko stanowisko, Boolean czySzczegoly)
         {
             Id = stanowisko.Id;

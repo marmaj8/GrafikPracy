@@ -12,6 +12,7 @@ namespace GrafikPracy.Controllers
     [Authorize]
     public class UrlopController : ApiController
     {
+        /*
         [HttpGet]
         public IHttpActionResult List(DateTime data, Boolean zatwierdzone)
         {
@@ -47,6 +48,49 @@ namespace GrafikPracy.Controllers
             catch (InvalidOperationException ex)
             {
                 return Content(HttpStatusCode.NotFound, "Nie znaleziono dnia " + data);
+            }
+            catch (Exception ex)
+            {
+                return Content(HttpStatusCode.InternalServerError, "Błąd serwera");
+            }
+
+            return Ok(lista);
+        }
+        */
+
+        [HttpGet]
+        public IHttpActionResult List(DateTime data, Boolean zatwierdzone)
+        {
+            User = System.Web.HttpContext.Current.User;
+            int user;
+            int.TryParse(((ClaimsIdentity)User.Identity).Claims.First(c => c.Type == "Id").Value, out user);
+
+            ((ClaimsIdentity)User.Identity).Claims.First(c => c.Type == "Admin");
+            if (((ClaimsIdentity)User.Identity).Claims.First(c => c.Type == "Admin").Value == "false")
+            {
+                return Content(HttpStatusCode.Forbidden, "Brak uprawnień do wykonania zadania!");
+            }
+
+            List<Models.UrlopToSend> lista = new List<Models.UrlopToSend>();
+            try
+            {
+                Models.DataBaseEntities db = new Models.DataBaseEntities();
+
+                if (zatwierdzone)
+                {
+
+                    foreach (Models.Urlop u in db.Urlop.Where(u => u.Zatwierdzony && u.DzienUrlopu.OrderBy(dd => dd.Dzien_Data).FirstOrDefault().Dzien_Data >= data))
+                    {
+                        lista.Add(new Models.UrlopToSend(u));
+                    }
+                }
+                else
+                {
+                    foreach (Models.Urlop u in db.Urlop.Where(u => u.DzienUrlopu.OrderBy(dd => dd.Dzien_Data).FirstOrDefault().Dzien_Data >= data))
+                    {
+                        lista.Add(new Models.UrlopToSend(u));
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -117,34 +161,43 @@ namespace GrafikPracy.Controllers
                 return Content(HttpStatusCode.Forbidden, "Brak uprawnień do wykonania zadania!");
             }
 
+            Models.Urlop ur = null;
             try
             {
                 Models.DataBaseEntities db = new Models.DataBaseEntities();
                 Models.Pracownik pracownik = db.Pracownik.First(p => p.Id == urlop.pracownik);
 
-                Models.Urlop ur = new Models.Urlop();
+                DateTime dzis = new DateTime();
+                if (urlop.poczatek < dzis.Date || urlop.koniec < dzis.Date)
+                {
+                    return Content(HttpStatusCode.BadRequest, "Obie daty muszą być w przyszłości!");
+                }
+
+                ur = new Models.Urlop();
                 ur.Powod = urlop.powod;
                 ur.Pracownik = pracownik;
+                //ur.DzienUrlopu = new List<Models.DzienUrlopu>();
 
                 db.Urlop.Add(ur);
                 
                 for (DateTime dt = urlop.poczatek; dt <= urlop.koniec; dt = dt.AddDays(1))
                 {
-                    if ( pracownik.DzienRoboczyPracownika.FirstOrDefault(d => d.DzienTygodnia.Id == (int)dt.DayOfWeek) != null)
+                    if (pracownik.DzienRoboczyPracownika.FirstOrDefault(d => d.DzienTygodnia.Id == (int)dt.DayOfWeek) != null)
                     {
                         Models.Dzien dzien = db.Dzien.FirstOrDefault(d => d.Data == dt);
-                        Models.DzienUrlopu du = new Models.DzienUrlopu();
-                        du.Urlop = ur;
                         if (dzien == null)
                         {
                             dzien = new Models.Dzien();
                             dzien.Data = dt;
                             db.Dzien.Add(dzien);
                         }
+                        Models.DzienUrlopu du = new Models.DzienUrlopu();
                         du.Dzien = dzien;
+                        du.Urlop = ur;
                         db.DzienUrlopu.Add(du);
                     }
                 }
+                
 
                 db.SaveChanges();
                 
@@ -158,7 +211,7 @@ namespace GrafikPracy.Controllers
                 return Content(HttpStatusCode.InternalServerError, "Błąd serwera");
             }
 
-            return Ok();
+            return Ok(ur.Id);
         }
 
         [HttpPatch]
@@ -193,7 +246,7 @@ namespace GrafikPracy.Controllers
                 return Content(HttpStatusCode.InternalServerError, "Błąd serwera");
             }
 
-            return Ok();
+            return Ok(id);
         }
     }
 }
