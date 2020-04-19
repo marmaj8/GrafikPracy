@@ -101,7 +101,7 @@ namespace GrafikPracy.Controllers
         }
 
         [HttpGet]
-        public IHttpActionResult List(int id, Boolean zatwierdzone)
+        public IHttpActionResult List(int id, DateTime data, Boolean zatwierdzone)
         {
             User = System.Web.HttpContext.Current.User;
             int user;
@@ -122,14 +122,16 @@ namespace GrafikPracy.Controllers
 
                 if (zatwierdzone)
                 {
-                    foreach (Models.Urlop u in pracownik.Urlop.Where(ur => ur.Zatwierdzony == true))
+                    foreach (Models.Urlop u in db.Urlop.Where(u => u.Zatwierdzony && u.DzienUrlopu.OrderBy(dd => dd.Dzien_Data).FirstOrDefault().Dzien_Data >= data))
+                    //foreach (Models.Urlop u in pracownik.Urlop.Where(ur => ur.Zatwierdzony == true))
                     {
                         lista.Add(new Models.UrlopToSend(u));
                     }
                 }
                 else
                 {
-                    foreach (Models.Urlop u in pracownik.Urlop)
+                    foreach (Models.Urlop u in pracownik.Urlop.Where(u => u.DzienUrlopu.OrderBy(dd => dd.Dzien_Data).FirstOrDefault().Dzien_Data >= data))
+                    //foreach (Models.Urlop u in pracownik.Urlop)
                     {
                         lista.Add(new Models.UrlopToSend(u));
                     }
@@ -167,7 +169,11 @@ namespace GrafikPracy.Controllers
                 Models.DataBaseEntities db = new Models.DataBaseEntities();
                 Models.Pracownik pracownik = db.Pracownik.First(p => p.Id == urlop.pracownik);
 
-                DateTime dzis = new DateTime();
+                DateTime dzis = DateTime.Now;
+                if (urlop.poczatek > urlop.koniec)
+                {
+                    return Content(HttpStatusCode.BadRequest, "Początek musi być datę wcześneijszą niż koniec!");
+                }
                 if (urlop.poczatek < dzis.Date || urlop.koniec < dzis.Date)
                 {
                     return Content(HttpStatusCode.BadRequest, "Obie daty muszą być w przyszłości!");

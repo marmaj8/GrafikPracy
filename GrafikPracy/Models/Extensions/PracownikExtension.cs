@@ -33,7 +33,7 @@ namespace GrafikPracy.Models
         public string Haslo { get; set; }
 
         [Required]
-        [Range(0, 100, ErrorMessage = "Ilość godzin w umowie musi mieścić się w przedziale od 0 do 220")]
+        [Range(0, 220, ErrorMessage = "Ilość godzin w umowie musi mieścić się w przedziale od 0 do 220")]
         public int GodzinWUmowie { get; set; }
     }
 }

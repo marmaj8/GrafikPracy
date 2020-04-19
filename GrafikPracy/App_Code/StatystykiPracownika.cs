@@ -50,7 +50,8 @@ namespace GrafikPracy
         {
         }
 
-        public void praca(DateTime poczatek, DateTime koniec, int stanowisko)
+        //public void praca(DateTime poczatek, DateTime koniec, int stanowisko)
+        public Boolean praca(DateTime poczatek, DateTime koniec, int stanowisko)
         {
             TimeSpan time = koniec.Subtract(poczatek);
             if (poprzedni != new DateTime())
@@ -83,22 +84,26 @@ namespace GrafikPracy
             Models.DzienRoboczyPracownika drp = dniRobocze.FirstOrDefault(d => d.DzienTygodnia.Id == (int)poczatek.DayOfWeek);
             if (drp == null || drp.Poczatek.TimeOfDay > poczatek.TimeOfDay || drp.Koniec.TimeOfDay < koniec.TimeOfDay)
             {
-                zlaGodzina += time.TotalHours;
+                return false;
+                //zlaGodzina += time.TotalHours;
             }
 
             Models.Dzien ur = urlop.FirstOrDefault(u => u.Data.Date == poczatek.Date || (u.Data.AddMinutes(-1)).Date == koniec.Date);
             if (ur != null)
             {
-                pracaUrlop += time.TotalHours;
+                return false;
+                //pracaUrlop += time.TotalHours;
             }
 
             Models.Stanowisko st = stanowiska.FirstOrDefault(s => s.Id == stanowisko);
             if (st == null)
             {
-                zleStanowisko += time.TotalHours;
+                return false;
+                //zleStanowisko += time.TotalHours;
             }
 
             poprzedni = koniec;
+            return true;
         }
 
         public double ponadUmowa()

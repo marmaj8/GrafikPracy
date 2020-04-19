@@ -13,6 +13,21 @@ namespace GrafikPracy.Controllers
     [Authorize]
     public class PracownikController : ApiController
     {
+
+        public string HashPassword(string haslo)
+        {
+            return haslo;
+            if (String.IsNullOrEmpty(haslo))
+                return String.Empty;
+
+            using (var sha = new System.Security.Cryptography.SHA256Managed())
+            {
+                byte[] textData = System.Text.Encoding.UTF8.GetBytes(haslo);
+                byte[] hash = sha.ComputeHash(textData);
+                return BitConverter.ToString(hash).Replace("-", String.Empty);
+            }
+        }
+
         [HttpGet]
         public IHttpActionResult List()
         {
@@ -126,7 +141,7 @@ namespace GrafikPracy.Controllers
 
                 pr.Imie = pracownik.Imie;
                 pr.Nazwisko = pracownik.Nazwisko;
-                pr.Haslo = pracownik.Haslo;
+                pr.Haslo = HashPassword(pracownik.Haslo);
                 pr.Administrator = false;
                 pr.GodzinWUmowie = pracownik.GodzinWUmowie;
                 pr.Email = pracownik.Email;
@@ -201,9 +216,12 @@ namespace GrafikPracy.Controllers
                 if (pracownik.Nazwisko != null && pracownik.Nazwisko.Length > 0)
                     pr.Nazwisko = pracownik.Nazwisko;
                 if (pracownik.Haslo != null && pracownik.Haslo.Length > 0)
-                    pr.Haslo = pracownik.Haslo;
+                    pr.Haslo = HashPassword(pracownik.Haslo);
                 if (pracownik.Email != null && pracownik.Email.Length > 0)
                     pr.Email = pracownik.Email;
+                if (pracownik.GodzinWUmowie != null)
+                    pr.GodzinWUmowie = pracownik.GodzinWUmowie;
+                pr.Administrator = pracownik.Administrator;
 
                 if (pracownik.DniRobocze != null)
                 {
@@ -212,6 +230,8 @@ namespace GrafikPracy.Controllers
 
                     foreach(Models.DzienRoboczyPracownikaToSend drpts in pracownik.DniRobocze)
                     {
+                        if (drpts.poczatek >= drpts.koniec)
+                            return Content(HttpStatusCode.BadRequest, "Godzina zakończenai musi być po godzinie rozpoczęcia!");
                         Models.DzienRoboczyPracownika drp = new Models.DzienRoboczyPracownika();
                         drp.DzienTygodnia = db.DzienTygodnia.First(d => d.Id == drpts.dzien);
                         drp.Pracownik = pr;

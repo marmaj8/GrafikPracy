@@ -101,9 +101,11 @@ namespace GrafikPracy
                     {// w pracy
                         int stanowisko = ((int)geny[i + 1]) % statyStan.Count();
 
-                        sp.praca(czas, czas.AddMinutes(przedzial), statyStanWzor[stanowisko].id);
-
-                        if (stanowisko <= statyPrac.Count())
+                        if(!sp.praca(czas, czas.AddMinutes(przedzial), statyStanWzor[stanowisko].id))
+                        {
+                            chromosome.ReplaceGene(i, new Gene(0));
+                        }
+                        else if (stanowisko <= statyPrac.Count())
                         {
                             statyStan[stanowisko].dodajPracownika();
                         }

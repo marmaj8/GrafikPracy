@@ -199,11 +199,10 @@ namespace GrafikPracy.Controllers
                 //var mutation = new ReverseSequenceMutation();
                 var mutation = new FlipBitMutation();
                 //var mutation = new UniformMutation(false);
-                //var fitness = new OcenaGrafiku(db, naGodzine, poczatek, koniec);
                 var fitness = new OcenaGrafiku(pracownicy,stanowiska, naGodzine, poczatek, koniec);
 
                 var termination = new GeneticSharp.Domain.Terminations.OrTermination(
-                    new FitnessStagnationTermination(100) , new FitnessThresholdTermination(0), new TimeEvolvingTermination(new TimeSpan(0, 5, 0)));
+                    new FitnessStagnationTermination(1000) , new FitnessThresholdTermination(0), new TimeEvolvingTermination(new TimeSpan(0, 5, 0)));
                 
                 var chromosome = new FloatingPointChromosome(genMin.ToArray(), genMax.ToArray(), genBits.ToArray(), genDecimal.ToArray());
                 var population = new Population(1000, 10000, chromosome);
@@ -211,7 +210,7 @@ namespace GrafikPracy.Controllers
 
                 var ga = new GeneticAlgorithm(population, fitness, selection, crossover, mutation);
                 ga.Termination = termination;
-                ga.MutationProbability = 1.0f;
+                ga.MutationProbability = 0.20f;
 
                 ga.Start();
 
